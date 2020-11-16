@@ -2,9 +2,17 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorLightBlack</item>
+        <item name="colorPrimaryDark">@color/colorCarbonBlack</item>
+        <item name="colorAccent">@color/colorMilkWhite</item>
+    </style>
+    
+    <style name="textAppearance">
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textColorHint">@color/colorWhite</item>
+        <item name="android:textColorHighlight">@color/colorWhite</item>
+        <item name="fontFamily">@font/muller_regular</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
 </resources>
