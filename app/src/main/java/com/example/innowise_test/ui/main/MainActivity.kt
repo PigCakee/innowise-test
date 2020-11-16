@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_squares, R.id.navigation_fibonacci, R.id.navigation_palindromes
             )
         )
+        setSupportActionBar(binding.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
     }
