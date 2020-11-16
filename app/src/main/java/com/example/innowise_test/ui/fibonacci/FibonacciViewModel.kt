@@ -32,12 +32,10 @@ class FibonacciViewModel : ViewModel() {
                 val sum = num1 + num2
                 num1 = num2
                 num2 = sum
-
-                val square: BigDecimal = (sum * sum)
-                numList.add(square)
+                numList.add(sum * sum)
             }
         } catch (e: Exception) {
-            error.call()
+            error.postValue(null)
         } finally {
             numbers.postValue(numList)
             isLoading.set(View.INVISIBLE)

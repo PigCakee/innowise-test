@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.innowise_test.databinding.NumberBinding
 import java.math.BigDecimal
 
-class FibonacciAdapter(
+class NumbersAdapter(
     private var data: List<BigDecimal> = listOf()
-) : RecyclerView.Adapter<FibonacciAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<NumbersAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding =
