@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_squares"
+        android:icon="@drawable/ic_square"
+        android:title="@string/squares" />
+
+    <item
+        android:id="@+id/navigation_fibonacci"
+        android:icon="@drawable/ic_fibonacci"
+        android:title="@string/fibonacci" />
+
+    <item
+        android:id="@+id/navigation_palindromes"
+        android:icon="@drawable/ic_palindrome"
+        android:title="@string/palindromes" />
+
+</menu>
