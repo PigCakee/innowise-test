@@ -3,23 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_squares">
+    app:startDestination="@id/navigation_today">
 
     <fragment
-        android:id="@+id/navigation_squares"
-        android:name="com.example.innowise_test.ui.squares.SquaresFragment"
-        android:label="@string/squares"
-        tools:layout="@layout/fragment_squares" />
+        android:id="@+id/navigation_today"
+        android:name="com.example.innowise_test.ui.today.TodayFragment"
+        android:label="@string/today"
+        tools:layout="@layout/fragment_today" />
 
     <fragment
-        android:id="@+id/navigation_fibonacci"
-        android:name="com.example.innowise_test.ui.fibonacci.FibonacciFragment"
-        android:label="@string/fibonacci"
-        tools:layout="@layout/fragment_fibonacci" />
-
-    <fragment
-        android:id="@+id/navigation_palindromes"
-        android:name="com.example.innowise_test.ui.palindromes.PalindromesFragment"
-        android:label="@string/palindromes"
-        tools:layout="@layout/fragment_palindromes" />
+        android:id="@+id/navigation_forecast"
+        android:name="com.example.innowise_test.ui.forecast.ForecastFragment"
+        android:label="@string/forecast"
+        tools:layout="@layout/fragment_forecast" />
 </navigation>

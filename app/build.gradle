@@ -78,4 +78,8 @@ dependencies {
     implementation 'com.android.support:design:29.0.0'
     implementation 'com.android.support:design:29.0.0-alpha1'
     implementation "ss.anoop:awesome-textinput-layout:1.0.3"
+
+    // RX
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
 }
