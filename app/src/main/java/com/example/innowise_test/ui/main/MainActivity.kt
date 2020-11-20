@@ -12,8 +12,6 @@ import com.example.innowise_test.R
 import com.example.innowise_test.databinding.ActivityMainBinding
 import com.example.innowise_test.di.ForecastComponent
 import com.example.innowise_test.di.TodayComponent
-import com.example.innowise_test.utils.inflaters.contentView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
