@@ -7,16 +7,27 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.innowise_test.MainApplication
 import com.example.innowise_test.R
 import com.example.innowise_test.databinding.ActivityMainBinding
+import com.example.innowise_test.di.ForecastComponent
+import com.example.innowise_test.di.TodayComponent
 import com.example.innowise_test.utils.inflaters.contentView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
+    lateinit var todayComponent: TodayComponent
+    lateinit var forecastComponent: ForecastComponent
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        inject()
         super.onCreate(savedInstanceState)
+        setUpViews()
+    }
+
+    private fun setUpViews() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         val navController = findNavController(R.id.nav_host_fragment)
@@ -28,5 +39,14 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
+    }
+
+    private fun inject() {
+        todayComponent = (application as MainApplication).appComponent.todayComponent().create()
+        todayComponent.inject(this)
+
+        forecastComponent =
+            (application as MainApplication).appComponent.forecastComponent().create()
+        forecastComponent.inject(this)
     }
 }
