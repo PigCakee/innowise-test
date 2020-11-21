@@ -17,17 +17,29 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavArgument
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.example.innowise_test.R
 import com.example.innowise_test.databinding.FragmentTodayBinding
+import com.example.innowise_test.model.weather.City
+import com.example.innowise_test.model.weather.Day
 import com.example.innowise_test.ui.main.MainActivity
 import com.example.innowise_test.utils.inflaters.contentView
-import com.google.android.gms.location.*
+import com.example.innowise_test.utils.view.ARGUMENT_TAG
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
+import javax.inject.Inject
 
 class TodayFragment : Fragment(), TodayContract.View {
     private val binding by contentView<FragmentTodayBinding>(R.layout.fragment_today)
     private lateinit var presenter: TodayContract.Presenter
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private lateinit var location: Location
+    private lateinit var navController: NavController
 
     companion object {
         const val PERMISSION_ID = 44
@@ -48,14 +60,34 @@ class TodayFragment : Fragment(), TodayContract.View {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         getLastLocation()
     }
 
-    override fun showSomething() {
-        TODO("Not yet implemented")
+    override fun onCallError(e: Throwable) {
+        Toast.makeText(requireContext(), e.printStackTrace().toString(), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onWeatherReady(days: List<Day>, city: City) {
+        with(days.first().timestamps.first()) {
+            // update today view with actual info
+        }
+
+        val cityStr = "${city.name},${city.country}"
+        binding.city.text = cityStr
+
+        navController.graph.findNode(R.id.navigation_forecast)
+            ?.addArgument(
+                ARGUMENT_TAG,
+                NavArgument.Builder().setDefaultValue(days).build()
+            )
     }
 
     @SuppressLint("MissingPermission")
@@ -70,6 +102,7 @@ class TodayFragment : Fragment(), TodayContract.View {
                             requestNewLocationData()
                         } else {
                             this.location = location
+                            (presenter as TodayPresenter).getWeather(location)
                         }
                     }
             } else {

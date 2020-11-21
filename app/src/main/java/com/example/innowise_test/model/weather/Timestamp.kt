@@ -1,9 +1,12 @@
 package com.example.innowise_test.model.weather
 
+import com.google.gson.annotations.SerializedName
+
 data class Timestamp(
     val clouds: Clouds,
     val dt: Int,
-    val dt_txt: String,
+    @SerializedName("dt_txt")
+    val date: String,
     val main: Main,
     val pop: Double,
     val rain: Rain,

@@ -23,7 +23,7 @@ class DayAdapter(
         with(holder.binding) {
             recyclerSub.adapter = TimestampAdapter(day)
             recyclerSub.setRecycledViewPool(recyclerViewPool)
-            this.day.text = day.timestamps[0].dt_txt
+            this.day.text = day.timestamps[0].date
         }
     }
 

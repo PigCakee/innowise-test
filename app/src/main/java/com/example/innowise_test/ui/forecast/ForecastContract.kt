@@ -8,8 +8,4 @@ interface ForecastContract {
     interface Presenter {
 
     }
-
-    interface Repository {
-        fun getForecastWeather()
-    }
 }

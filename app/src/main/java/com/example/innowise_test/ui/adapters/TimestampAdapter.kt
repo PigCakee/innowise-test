@@ -21,7 +21,7 @@ class TimestampAdapter(
 
         with(holder.binding) {
             temperature.text = day.timestamps[position].main.temp.toString()
-            time.text = day.timestamps[position].dt_txt
+            time.text = day.timestamps[position].date
             weather.text = day.timestamps[position].weather[0].description
             //skyImage.setImageDrawable()
         }

@@ -5,9 +5,5 @@ import javax.inject.Inject
 
 class ForecastPresenter @Inject constructor(private val view: ForecastContract.View) :
     ForecastContract.Presenter {
-    private val repository: ForecastContract.Repository
 
-    init {
-        repository = WeatherRepository()
-    }
 }
