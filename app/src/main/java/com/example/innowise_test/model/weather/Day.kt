@@ -1,5 +1,9 @@
 package com.example.innowise_test.model.weather
 
-class Day {
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+data class Day (
     var timestamps: MutableList<Timestamp> = mutableListOf()
-}
+) : Parcelable

@@ -9,6 +9,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
+import android.os.Parcelable
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
+import java.util.ArrayList
 import javax.inject.Inject
 
 class TodayFragment : Fragment(), TodayContract.View {
@@ -40,10 +42,12 @@ class TodayFragment : Fragment(), TodayContract.View {
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private lateinit var location: Location
     private lateinit var navController: NavController
+    private var days: List<Day> = listOf()
 
     companion object {
         const val PERMISSION_ID = 44
         const val ERROR = "Please turn on your location..."
+        const val DAYS = "days"
     }
 
     override fun onAttach(context: Context) {
@@ -57,6 +61,7 @@ class TodayFragment : Fragment(), TodayContract.View {
         savedInstanceState: Bundle?
     ): View? {
         presenter = TodayPresenter(this)
+        savedInstanceState?.getParcelableArrayList<Day>(DAYS)?.let { days = it}
         return binding.root
     }
 
@@ -71,13 +76,27 @@ class TodayFragment : Fragment(), TodayContract.View {
         getLastLocation()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelableArrayList(DAYS, days as ArrayList<out Parcelable>)
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onCallError(e: Throwable) {
         Toast.makeText(requireContext(), e.printStackTrace().toString(), Toast.LENGTH_SHORT).show()
     }
 
     override fun onWeatherReady(days: List<Day>, city: City) {
+        this.days = days
         with(days.first().timestamps.first()) {
-            // update today view with actual info
+            val temp = "${this.main.temp.toInt() - 273}°C"
+            val pressure = "${this.main.pressure} hPa"
+            val wind = "${this.wind.speed} m/s"
+            val humidity = "${this.main.humidity}%"
+
+            binding.temp.text = temp
+            binding.pressure.text = pressure
+            binding.wind.text = wind
+            binding.humidity.text = humidity
         }
 
         val cityStr = "${city.name},${city.country}"

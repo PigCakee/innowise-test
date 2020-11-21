@@ -29,14 +29,14 @@
             tools:text="London, UK" />
 
         <TextView
-            android:id="@+id/temp"
+            android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="@+id/city"
             app:layout_constraintStart_toStartOf="@+id/city"
             app:layout_constraintTop_toBottomOf="@+id/city"
-            tools:text="22C | Sunny" />
+            tools:text="Sunny" />
 
         <View
             android:id="@+id/divider"
@@ -44,9 +44,9 @@
             android:layout_height="2dp"
             android:layout_marginTop="32dp"
             android:background="?android:attr/listDivider"
-            app:layout_constraintEnd_toEndOf="@+id/temp"
-            app:layout_constraintStart_toStartOf="@+id/temp"
-            app:layout_constraintTop_toBottomOf="@+id/temp" />
+            app:layout_constraintEnd_toEndOf="@+id/status"
+            app:layout_constraintStart_toStartOf="@+id/status"
+            app:layout_constraintTop_toBottomOf="@+id/status" />
 
         <View
             android:id="@+id/divider2"
@@ -54,8 +54,8 @@
             android:layout_height="2dp"
             android:layout_marginTop="32dp"
             android:background="?android:attr/listDivider"
-            app:layout_constraintEnd_toEndOf="@+id/temp"
-            app:layout_constraintStart_toStartOf="@+id/temp"
+            app:layout_constraintEnd_toEndOf="@+id/status"
+            app:layout_constraintStart_toStartOf="@+id/status"
             app:layout_constraintTop_toBottomOf="@+id/imageView7" />
 
         <ImageView
@@ -76,7 +76,7 @@
             app:layout_constraintEnd_toEndOf="@+id/divider"
             app:layout_constraintStart_toStartOf="@+id/divider"
             app:layout_constraintTop_toBottomOf="@+id/divider"
-            app:srcCompat="@drawable/ic_drop" />
+            app:srcCompat="@drawable/ic_thermometer" />
 
         <ImageView
             android:id="@+id/imageView5"
@@ -129,13 +129,13 @@
             tools:text="57%" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="@+id/imageView4"
             app:layout_constraintStart_toStartOf="@+id/imageView4"
             app:layout_constraintTop_toBottomOf="@+id/imageView4"
-            tools:text="1.0 mm" />
+            tools:text="22°C" />
 
         <TextView
             android:id="@+id/pressure"
@@ -156,9 +156,10 @@
             tools:text="20 km/h" />
 
         <TextView
-            android:id="@+id/textView8"
+            android:id="@+id/compass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/se"
             app:layout_constraintEnd_toEndOf="@+id/imageView7"
             app:layout_constraintStart_toStartOf="@+id/imageView7"
             app:layout_constraintTop_toBottomOf="@+id/imageView7"

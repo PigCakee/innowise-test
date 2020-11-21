@@ -1,5 +1,9 @@
 package com.example.innowise_test.model.weather
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class City(
     val coord: Coord,
     val country: String,
@@ -9,4 +13,4 @@ data class City(
     val sunrise: Int,
     val sunset: Int,
     val timezone: Int
-)
+) : Parcelable

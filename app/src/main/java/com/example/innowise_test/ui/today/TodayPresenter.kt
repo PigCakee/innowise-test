@@ -20,7 +20,7 @@ class TodayPresenter @Inject constructor(val view: TodayContract.View) :
 
     override fun onWeatherReady(apiResponse: ApiResponse) {
         val days = mutableListOf<Day>()
-        val day = Day()
+        val day = Day(mutableListOf())
         var dayStr = apiResponse.list.first().date.split(' ').first()
 
         apiResponse.list.forEach { timestamp ->

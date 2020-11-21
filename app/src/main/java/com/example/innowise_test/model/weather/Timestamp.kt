@@ -1,7 +1,10 @@
 package com.example.innowise_test.model.weather
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Timestamp(
     val clouds: Clouds,
     val dt: Int,
@@ -13,4 +16,4 @@ data class Timestamp(
     val visibility: Int,
     val weather: List<Weather>,
     val wind: Wind
-)
+) : Parcelable
