@@ -43,11 +43,13 @@ class TodayFragment : Fragment(), TodayContract.View {
     private lateinit var location: Location
     private lateinit var navController: NavController
     private var days: List<Day> = listOf()
+    private var city: City = City.emptyInstance()
 
     companion object {
         const val PERMISSION_ID = 44
         const val ERROR = "Please turn on your location..."
         const val DAYS = "days"
+        const val CITY = "city"
     }
 
     override fun onAttach(context: Context) {
@@ -61,13 +63,17 @@ class TodayFragment : Fragment(), TodayContract.View {
         savedInstanceState: Bundle?
     ): View? {
         presenter = TodayPresenter(this)
+
         savedInstanceState?.getParcelableArrayList<Day>(DAYS)?.let { days = it}
+        savedInstanceState?.getParcelable<City>(CITY)?.let { city = it}
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
+        onWeatherReady(days, city)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -77,8 +83,9 @@ class TodayFragment : Fragment(), TodayContract.View {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelableArrayList(DAYS, days as ArrayList<out Parcelable>)
         super.onSaveInstanceState(outState)
+        outState.putParcelableArrayList(DAYS, days as ArrayList<out Parcelable>)
+        outState.putParcelable(CITY, city)
     }
 
     override fun onCallError(e: Throwable) {
@@ -87,26 +94,29 @@ class TodayFragment : Fragment(), TodayContract.View {
 
     override fun onWeatherReady(days: List<Day>, city: City) {
         this.days = days
-        with(days.first().timestamps.first()) {
-            val temp = "${this.main.temp.toInt() - 273}°C"
-            val pressure = "${this.main.pressure} hPa"
-            val wind = "${this.wind.speed} m/s"
-            val humidity = "${this.main.humidity}%"
+        this.city = city
+        if (days.isNotEmpty()) {
+            with(days.first().timestamps.first()) {
+                val temp = "${this.main.temp.toInt() - 273}°C"
+                val pressure = "${this.main.pressure} hPa"
+                val wind = "${this.wind.speed} m/s"
+                val humidity = "${this.main.humidity}%"
 
-            binding.temp.text = temp
-            binding.pressure.text = pressure
-            binding.wind.text = wind
-            binding.humidity.text = humidity
+                binding.temp.text = temp
+                binding.pressure.text = pressure
+                binding.wind.text = wind
+                binding.humidity.text = humidity
+            }
+
+            val cityStr = "${city.name},${city.country}"
+            binding.city.text = cityStr
+
+            navController.graph.findNode(R.id.navigation_forecast)
+                ?.addArgument(
+                    ARGUMENT_TAG,
+                    NavArgument.Builder().setDefaultValue(days).build()
+                )
         }
-
-        val cityStr = "${city.name},${city.country}"
-        binding.city.text = cityStr
-
-        navController.graph.findNode(R.id.navigation_forecast)
-            ?.addArgument(
-                ARGUMENT_TAG,
-                NavArgument.Builder().setDefaultValue(days).build()
-            )
     }
 
     @SuppressLint("MissingPermission")
