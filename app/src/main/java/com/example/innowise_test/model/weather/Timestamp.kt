@@ -1,6 +1,9 @@
 package com.example.innowise_test.model.weather
 
 import android.os.Parcelable
+import androidx.room.Embedded
+import androidx.room.TypeConverters
+import com.example.innowise_test.model.db.DataTypeConverter
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 

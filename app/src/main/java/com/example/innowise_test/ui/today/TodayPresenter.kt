@@ -1,41 +1,30 @@
 package com.example.innowise_test.ui.today
 
+import android.content.Context
 import android.location.Location
+import com.example.innowise_test.model.db.WeatherContainer
 import com.example.innowise_test.model.repo.WeatherRepository
 import com.example.innowise_test.model.weather.ApiResponse
 import com.example.innowise_test.model.weather.Day
 import javax.inject.Inject
 
-class TodayPresenter @Inject constructor(val view: TodayContract.View) :
+class TodayPresenter @Inject constructor(val view: TodayContract.View, context: Context) :
     TodayContract.Presenter {
     private val repository: TodayContract.Repository
 
     init {
-        repository = WeatherRepository(this)
+        repository = WeatherRepository(this, context)
     }
 
     fun getWeather(location: Location) {
         repository.getWeather(location)
     }
 
-    override fun onWeatherReady(apiResponse: ApiResponse) {
-        val days = mutableListOf<Day>()
-        val day = Day(mutableListOf())
-        var dayStr = apiResponse.list.first().date.split(' ').first()
+    override fun onWeatherReady(weatherContainer: WeatherContainer) {
+        repository.deleteWeatherFromDB()
+        repository.saveWeatherToDB(weatherContainer)
 
-        apiResponse.list.forEach { timestamp ->
-            if (timestamp.date.split(' ').first() == dayStr) {
-                day.timestamps.add(timestamp)
-            } else {
-                days.add(day)
-                day.timestamps.clear()
-                day.timestamps.add(timestamp)
-                dayStr = timestamp.date.split(' ').first()
-            }
-        }
-        days.add(day)
-
-        view.onWeatherReady(days, apiResponse.city)
+        view.onWeatherReady(weatherContainer)
     }
 
     override fun onCallError(e: Throwable) {

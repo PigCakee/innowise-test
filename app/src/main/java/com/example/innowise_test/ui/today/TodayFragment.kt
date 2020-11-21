@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.example.innowise_test.R
 import com.example.innowise_test.databinding.FragmentTodayBinding
+import com.example.innowise_test.model.db.WeatherContainer
 import com.example.innowise_test.model.weather.City
 import com.example.innowise_test.model.weather.Day
 import com.example.innowise_test.ui.main.MainActivity
@@ -34,7 +35,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import java.util.ArrayList
-import javax.inject.Inject
 
 class TodayFragment : Fragment(), TodayContract.View {
     private val binding by contentView<FragmentTodayBinding>(R.layout.fragment_today)
@@ -42,7 +42,7 @@ class TodayFragment : Fragment(), TodayContract.View {
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private lateinit var location: Location
     private lateinit var navController: NavController
-    private var days: List<Day> = listOf()
+    private var days: ArrayList<Day> = arrayListOf()
     private var city: City = City.emptyInstance()
 
     companion object {
@@ -62,7 +62,7 @@ class TodayFragment : Fragment(), TodayContract.View {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        presenter = TodayPresenter(this)
+        presenter = TodayPresenter(this, requireContext())
 
         savedInstanceState?.getParcelableArrayList<Day>(DAYS)?.let { days = it}
         savedInstanceState?.getParcelable<City>(CITY)?.let { city = it}
@@ -72,18 +72,20 @@ class TodayFragment : Fragment(), TodayContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         navController = Navigation.findNavController(view)
-        onWeatherReady(days, city)
+        onWeatherReady(WeatherContainer(days, city))
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        getLastLocation()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+
         outState.putParcelableArrayList(DAYS, days as ArrayList<out Parcelable>)
         outState.putParcelable(CITY, city)
     }
@@ -92,9 +94,9 @@ class TodayFragment : Fragment(), TodayContract.View {
         Toast.makeText(requireContext(), e.printStackTrace().toString(), Toast.LENGTH_SHORT).show()
     }
 
-    override fun onWeatherReady(days: List<Day>, city: City) {
-        this.days = days
-        this.city = city
+    override fun onWeatherReady(weatherContainer: WeatherContainer) {
+        days = weatherContainer.days as ArrayList<Day>
+        city = weatherContainer.city
         if (days.isNotEmpty()) {
             with(days.first().timestamps.first()) {
                 val temp = "${this.main.temp.toInt() - 273}°C"
