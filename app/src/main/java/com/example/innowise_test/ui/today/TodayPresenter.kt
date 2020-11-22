@@ -4,8 +4,6 @@ import android.content.Context
 import android.location.Location
 import com.example.innowise_test.model.db.WeatherContainer
 import com.example.innowise_test.model.repo.WeatherRepository
-import com.example.innowise_test.model.weather.ApiResponse
-import com.example.innowise_test.model.weather.Day
 import javax.inject.Inject
 
 class TodayPresenter @Inject constructor(val view: TodayContract.View, context: Context) :
@@ -16,14 +14,12 @@ class TodayPresenter @Inject constructor(val view: TodayContract.View, context: 
         repository = WeatherRepository(this, context)
     }
 
-    fun getWeather(location: Location) {
-        repository.getWeather(location)
+    fun getWeather(location: Location, isConnected: Boolean) {
+        repository.getWeather(location, isConnected)
     }
 
     override fun onWeatherReady(weatherContainer: WeatherContainer) {
-        repository.deleteWeatherFromDB()
-        repository.saveWeatherToDB(weatherContainer)
-
+        repository.manageWeatherInDatabase(weatherContainer)
         view.onWeatherReady(weatherContainer)
     }
 

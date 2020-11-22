@@ -2,9 +2,6 @@ package com.example.innowise_test.ui.today
 
 import android.location.Location
 import com.example.innowise_test.model.db.WeatherContainer
-import com.example.innowise_test.model.weather.ApiResponse
-import com.example.innowise_test.model.weather.City
-import com.example.innowise_test.model.weather.Day
 
 interface TodayContract {
     interface View {
@@ -18,8 +15,8 @@ interface TodayContract {
     }
 
     interface Repository {
-        fun getWeather(location: Location)
-        fun deleteWeatherFromDB()
+        fun getWeather(location: Location, isConnected: Boolean)
+        fun manageWeatherInDatabase(weatherContainer: WeatherContainer)
         fun saveWeatherToDB(weatherContainer: WeatherContainer)
     }
 }

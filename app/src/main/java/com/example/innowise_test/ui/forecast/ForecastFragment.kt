@@ -10,7 +10,6 @@ import com.example.innowise_test.R
 import com.example.innowise_test.databinding.FragmentForecastBinding
 import com.example.innowise_test.ui.main.MainActivity
 import com.example.innowise_test.utils.inflaters.contentView
-import javax.inject.Inject
 
 class ForecastFragment : Fragment(), ForecastContract.View {
     private val binding by contentView<FragmentForecastBinding>(R.layout.fragment_forecast)

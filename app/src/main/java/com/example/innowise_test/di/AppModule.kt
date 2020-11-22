@@ -1,9 +1,7 @@
 package com.example.innowise_test.di
 
 import android.content.Context
-import android.content.SharedPreferences
 import com.example.innowise_test.model.db.WeatherDatabase
-import com.example.innowise_test.utils.view.APP_PREFERENCES
 import dagger.Module
 import dagger.Provides
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory

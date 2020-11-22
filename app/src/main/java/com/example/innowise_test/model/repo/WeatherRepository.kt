@@ -2,8 +2,6 @@ package com.example.innowise_test.model.repo
 
 import android.content.Context
 import android.location.Location
-import android.util.Log
-import androidx.annotation.WorkerThread
 import com.example.innowise_test.api.WeatherApi
 import com.example.innowise_test.model.db.WeatherContainer
 import com.example.innowise_test.model.db.WeatherDatabase
@@ -12,12 +10,11 @@ import com.example.innowise_test.model.weather.Day
 import com.example.innowise_test.ui.today.TodayContract
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.CompletableObserver
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.observers.DisposableMaybeObserver
 import io.reactivex.rxjava3.observers.DisposableSingleObserver
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.function.Consumer
 import javax.inject.Inject
 
 class WeatherRepository @Inject constructor(
@@ -27,9 +24,13 @@ class WeatherRepository @Inject constructor(
     private val weatherDatabase: WeatherDatabase = WeatherDatabase.getDatabase(context)
     private var weatherDao = weatherDatabase.weatherDao()
 
-    override fun getWeather(location: Location) {
-        getWeatherFromDB()
-        getWeatherFromNet(location)
+    override fun getWeather(location: Location, isConnected: Boolean) {
+        if (isConnected) {
+            getWeatherFromDB()
+            getWeatherFromNet(location)
+        } else {
+            getWeatherFromDB()
+        }
     }
 
     private fun getWeatherFromDB() {
@@ -40,7 +41,7 @@ class WeatherRepository @Inject constructor(
                 override fun onSuccess(it: WeatherContainer?) {
                     if (it != null) {
                         presenter.onWeatherReady(it)
-                    }//
+                    }
                 }
 
                 override fun onError(e: Throwable?) {
@@ -97,11 +98,21 @@ class WeatherRepository @Inject constructor(
         return WeatherContainer(days, apiResponse.city)
     }
 
-    override fun deleteWeatherFromDB() {
-        Completable.fromRunnable { weatherDao.deleteAll() }.subscribeOn(Schedulers.io()).subscribe()
+    override fun manageWeatherInDatabase(weatherContainer: WeatherContainer) {
+        Completable.fromRunnable { weatherDao.deleteAll() }.subscribeOn(Schedulers.io()).subscribe(object : CompletableObserver{
+            override fun onSubscribe(d: Disposable?) {
+            }
+
+            override fun onComplete() {
+                Completable.fromRunnable { weatherDao.insert(weatherContainer) }.subscribeOn(Schedulers.io()).subscribe()
+            }
+
+            override fun onError(e: Throwable?) {
+            }
+        })
     }
 
     override fun saveWeatherToDB(weatherContainer: WeatherContainer) {
-        Completable.fromRunnable { weatherDao.insert(weatherContainer) }.subscribeOn(Schedulers.io()).subscribe()//
+        Completable.fromRunnable { weatherDao.insert(weatherContainer) }.subscribeOn(Schedulers.io()).subscribe()
     }
 }

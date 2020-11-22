@@ -4,12 +4,13 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Looper
-import android.os.Parcelable
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -24,19 +25,18 @@ import androidx.navigation.Navigation
 import com.example.innowise_test.R
 import com.example.innowise_test.databinding.FragmentTodayBinding
 import com.example.innowise_test.model.db.WeatherContainer
+import com.example.innowise_test.model.repo.ConnectivityReceiver
 import com.example.innowise_test.model.weather.City
 import com.example.innowise_test.model.weather.Day
 import com.example.innowise_test.ui.main.MainActivity
 import com.example.innowise_test.utils.inflaters.contentView
 import com.example.innowise_test.utils.view.ARGUMENT_TAG
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationResult
-import java.util.ArrayList
+import com.google.android.gms.location.*
+import com.google.android.material.snackbar.Snackbar
+import java.util.*
 
-class TodayFragment : Fragment(), TodayContract.View {
+class TodayFragment : Fragment(), TodayContract.View,
+    ConnectivityReceiver.ConnectivityReceiverListener {
     private val binding by contentView<FragmentTodayBinding>(R.layout.fragment_today)
     private lateinit var presenter: TodayContract.Presenter
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
@@ -44,12 +44,12 @@ class TodayFragment : Fragment(), TodayContract.View {
     private lateinit var navController: NavController
     private var days: ArrayList<Day> = arrayListOf()
     private var city: City = City.emptyInstance()
+    private val receiver = ConnectivityReceiver()
 
     companion object {
         const val PERMISSION_ID = 44
         const val ERROR = "Please turn on your location..."
-        const val DAYS = "days"
-        const val CITY = "city"
+        const val OFFLINE = "You are offline"
     }
 
     override fun onAttach(context: Context) {
@@ -57,16 +57,13 @@ class TodayFragment : Fragment(), TodayContract.View {
         (activity as MainActivity).todayComponent.inject(this)
     }
 
+    @Suppress("DEPRECATION")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         presenter = TodayPresenter(this, requireContext())
-
-        savedInstanceState?.getParcelableArrayList<Day>(DAYS)?.let { days = it}
-        savedInstanceState?.getParcelable<City>(CITY)?.let { city = it}
-
         return binding.root
     }
 
@@ -79,19 +76,24 @@ class TodayFragment : Fragment(), TodayContract.View {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+    override fun onNetworkConnectionChanged(isConnected: Boolean) {
+        showNetworkMessage(isConnected)
+        getLastLocation(isConnected)
+    }
 
-        outState.putParcelableArrayList(DAYS, days as ArrayList<out Parcelable>)
-        outState.putParcelable(CITY, city)
+    private fun showNetworkMessage(isConnected: Boolean) {
+        val snackbar = Snackbar.make(binding.root, OFFLINE, Snackbar.LENGTH_LONG)
+        if (!isConnected) {
+            snackbar.show()
+        } else {
+            snackbar.dismiss()
+        }
     }
 
     override fun onCallError(e: Throwable) {
-        Toast.makeText(requireContext(), e.printStackTrace().toString(), Toast.LENGTH_SHORT).show()
     }
 
     override fun onWeatherReady(weatherContainer: WeatherContainer) {
@@ -122,7 +124,7 @@ class TodayFragment : Fragment(), TodayContract.View {
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLastLocation() {
+    private fun getLastLocation(isConnected: Boolean) {
         if (checkPermissions()) {
             if (isLocationEnabled()) {
                 mFusedLocationClient
@@ -133,7 +135,7 @@ class TodayFragment : Fragment(), TodayContract.View {
                             requestNewLocationData()
                         } else {
                             this.location = location
-                            (presenter as TodayPresenter).getWeather(location)
+                            (presenter as TodayPresenter).getWeather(location, isConnected)
                         }
                     }
             } else {
@@ -200,23 +202,18 @@ class TodayFragment : Fragment(), TodayContract.View {
         ))
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_ID) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                getLastLocation()
-            }
-        }
-    }
-
     override fun onResume() {
         super.onResume()
-        if (checkPermissions()) {
-            getLastLocation()
-        }
+        requireActivity().registerReceiver(
+            receiver,
+            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        )
+        ConnectivityReceiver.connectivityReceiverListener = this
+        checkPermissions()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireActivity().unregisterReceiver(receiver)
     }
 }
