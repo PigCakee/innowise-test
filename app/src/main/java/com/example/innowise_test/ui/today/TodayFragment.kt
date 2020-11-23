@@ -30,6 +30,7 @@ import com.example.innowise_test.model.repo.ConnectivityReceiver
 import com.example.innowise_test.model.weather.City
 import com.example.innowise_test.model.weather.Day
 import com.example.innowise_test.model.weather.WeatherIconFactory
+import com.example.innowise_test.model.weather.WeatherWindFactory
 import com.example.innowise_test.ui.main.MainActivity
 import com.example.innowise_test.utils.inflaters.contentView
 import com.example.innowise_test.utils.view.ARGUMENT_TAG
@@ -129,12 +130,14 @@ class TodayFragment : Fragment(), TodayContract.View,
                 var weather = weather[0].description
                 weather = weather.replaceFirst(weather[0], weather[0].toUpperCase())
                 val iconId = this.weather.first().id
+                val compass = WeatherWindFactory.getWindDirection(this.wind.deg)
 
                 binding.temp.text = temp
                 binding.pressure.text = pressure
                 binding.wind.text = wind
                 binding.humidity.text = humidity
                 binding.status.text = weather
+                binding.compass.text = compass
                 binding.sky.setImageDrawable(WeatherIconFactory.getIcon(iconId, requireContext()))
             }
 
