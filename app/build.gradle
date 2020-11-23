@@ -103,4 +103,7 @@ dependencies {
 
     //Google play services
     implementation "com.google.android.gms:play-services-location:17.1.0"
+
+    // SwipeRefreshLayout
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 }

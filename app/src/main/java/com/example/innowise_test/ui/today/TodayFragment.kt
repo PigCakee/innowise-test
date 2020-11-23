@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavArgument
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.innowise_test.R
 import com.example.innowise_test.databinding.FragmentTodayBinding
 import com.example.innowise_test.model.db.WeatherContainer
@@ -36,7 +37,8 @@ import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
 class TodayFragment : Fragment(), TodayContract.View,
-    ConnectivityReceiver.ConnectivityReceiverListener {
+    ConnectivityReceiver.ConnectivityReceiverListener,
+    SwipeRefreshLayout.OnRefreshListener {
     private val binding by contentView<FragmentTodayBinding>(R.layout.fragment_today)
     private lateinit var presenter: TodayContract.Presenter
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
@@ -45,6 +47,7 @@ class TodayFragment : Fragment(), TodayContract.View,
     private var days: ArrayList<Day> = arrayListOf()
     private var city: City = City.emptyInstance()
     private val receiver = ConnectivityReceiver()
+    private var isConnected: Boolean = false
 
     companion object {
         const val PERMISSION_ID = 44
@@ -64,6 +67,7 @@ class TodayFragment : Fragment(), TodayContract.View,
         savedInstanceState: Bundle?
     ): View? {
         presenter = TodayPresenter(this, requireContext())
+        binding.swipeToRefreshLayout.setOnRefreshListener(this)
         return binding.root
     }
 
@@ -79,7 +83,30 @@ class TodayFragment : Fragment(), TodayContract.View,
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
+    @Suppress("DEPRECATION")
+    override fun onResume() {
+        super.onResume()
+        ConnectivityReceiver.connectivityReceiverListener = this
+        requireActivity().registerReceiver(
+            receiver,
+            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        )
+        checkPermissions()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireActivity().unregisterReceiver(receiver)
+    }
+
+    override fun onRefresh() {
+        getLastLocation(isConnected)
+    }
+
     override fun onNetworkConnectionChanged(isConnected: Boolean) {
+        this.isConnected = isConnected
+        binding.swipeToRefreshLayout.isRefreshing = true
+
         showNetworkMessage(isConnected)
         getLastLocation(isConnected)
     }
@@ -97,6 +124,8 @@ class TodayFragment : Fragment(), TodayContract.View,
     }
 
     override fun onWeatherReady(weatherContainer: WeatherContainer) {
+        binding.swipeToRefreshLayout.isRefreshing = false
+
         days = weatherContainer.days as ArrayList<Day>
         city = weatherContainer.city
         if (days.isNotEmpty()) {
@@ -200,20 +229,5 @@ class TodayFragment : Fragment(), TodayContract.View,
         return (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
             LocationManager.NETWORK_PROVIDER
         ))
-    }
-
-    override fun onResume() {
-        super.onResume()
-        requireActivity().registerReceiver(
-            receiver,
-            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-        )
-        ConnectivityReceiver.connectivityReceiverListener = this
-        checkPermissions()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        requireActivity().unregisterReceiver(receiver)
     }
 }
