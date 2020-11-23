@@ -125,7 +125,7 @@ class TodayFragment : Fragment(), TodayContract.View,
             with(days.first().timestamps.first()) {
                 val temp = "${this.main.temp.toInt() - 273}°C"
                 val pressure = "${this.main.pressure} hPa"
-                val wind = "${this.wind.speed} m/s"
+                val wind = "${(this.wind.speed * 3.6).toInt()} km/h"
                 val humidity = "${this.main.humidity}%"
                 var weather = weather[0].description
                 weather = weather.replaceFirst(weather[0], weather[0].toUpperCase())
