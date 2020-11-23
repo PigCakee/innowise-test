@@ -29,6 +29,7 @@ import com.example.innowise_test.model.db.WeatherContainer
 import com.example.innowise_test.model.repo.ConnectivityReceiver
 import com.example.innowise_test.model.weather.City
 import com.example.innowise_test.model.weather.Day
+import com.example.innowise_test.model.weather.WeatherIconFactory
 import com.example.innowise_test.ui.main.MainActivity
 import com.example.innowise_test.utils.inflaters.contentView
 import com.example.innowise_test.utils.view.ARGUMENT_TAG
@@ -111,15 +112,6 @@ class TodayFragment : Fragment(), TodayContract.View,
         getLastLocation(isConnected)
     }
 
-    private fun showNetworkMessage(isConnected: Boolean) {
-        val snackbar = Snackbar.make(binding.root, OFFLINE, Snackbar.LENGTH_LONG)
-        if (!isConnected) {
-            snackbar.show()
-        } else {
-            snackbar.dismiss()
-        }
-    }
-
     override fun onCallError(e: Throwable) {
     }
 
@@ -134,11 +126,16 @@ class TodayFragment : Fragment(), TodayContract.View,
                 val pressure = "${this.main.pressure} hPa"
                 val wind = "${this.wind.speed} m/s"
                 val humidity = "${this.main.humidity}%"
+                var weather = weather[0].description
+                weather = weather.replaceFirst(weather[0], weather[0].toUpperCase())
+                val iconId = this.weather.first().id
 
                 binding.temp.text = temp
                 binding.pressure.text = pressure
                 binding.wind.text = wind
                 binding.humidity.text = humidity
+                binding.status.text = weather
+                binding.sky.setImageDrawable(WeatherIconFactory.getIcon(iconId, requireContext()))
             }
 
             val cityStr = "${city.name},${city.country}"
@@ -147,8 +144,17 @@ class TodayFragment : Fragment(), TodayContract.View,
             navController.graph.findNode(R.id.navigation_forecast)
                 ?.addArgument(
                     ARGUMENT_TAG,
-                    NavArgument.Builder().setDefaultValue(days).build()
+                    NavArgument.Builder().setDefaultValue(weatherContainer).build()
                 )
+        }
+    }
+
+    private fun showNetworkMessage(isConnected: Boolean) {
+        val snackbar = Snackbar.make(binding.root, OFFLINE, Snackbar.LENGTH_LONG)
+        if (!isConnected) {
+            snackbar.show()
+        } else {
+            snackbar.dismiss()
         }
     }
 

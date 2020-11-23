@@ -15,5 +15,11 @@
         android:id="@+id/navigation_forecast"
         android:name="com.example.innowise_test.ui.forecast.ForecastFragment"
         android:label="@string/forecast"
-        tools:layout="@layout/fragment_forecast" />
+        tools:layout="@layout/fragment_forecast">
+        <argument
+            android:name="days"
+            app:argType="com.example.innowise_test.model.db.WeatherContainer"
+            android:defaultValue="@null">
+        </argument>
+    </fragment>
 </navigation>

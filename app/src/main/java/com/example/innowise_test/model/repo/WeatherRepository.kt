@@ -7,6 +7,7 @@ import com.example.innowise_test.model.db.WeatherContainer
 import com.example.innowise_test.model.db.WeatherDatabase
 import com.example.innowise_test.model.weather.ApiResponse
 import com.example.innowise_test.model.weather.Day
+import com.example.innowise_test.model.weather.Timestamp
 import com.example.innowise_test.ui.today.TodayContract
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
@@ -81,20 +82,24 @@ class WeatherRepository @Inject constructor(
 
     private fun convertResponseToWeather(apiResponse: ApiResponse): WeatherContainer {
         val days = mutableListOf<Day>()
-        val day = Day(mutableListOf())
         var dayStr = apiResponse.list.first().date.split(' ').first()
+        val day = Day(mutableListOf())
 
-        apiResponse.list.forEach { timestamp ->
+        for ((index, timestamp) in apiResponse.list.withIndex()) {
             if (timestamp.date.split(' ').first() == dayStr) {
                 day.timestamps.add(timestamp)
             } else {
-                days.add(day)
-                day.timestamps.clear()
+                val tempDay = Day(mutableListOf())
+                tempDay.timestamps = day.timestamps
+                days.add(tempDay)
+                day.timestamps = mutableListOf()
                 day.timestamps.add(timestamp)
                 dayStr = timestamp.date.split(' ').first()
             }
+            if (index == apiResponse.list.indexOf(apiResponse.list.last())) {
+                days.add(day)
+            }
         }
-        days.add(day)
         return WeatherContainer(days, apiResponse.city)
     }
 
