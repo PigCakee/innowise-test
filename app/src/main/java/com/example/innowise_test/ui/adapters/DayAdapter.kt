@@ -34,8 +34,8 @@ class DayAdapter(
             val currentDate =
                 SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Calendar.getInstance().time)
 
-            val dayOfTheWeek = SimpleDateFormat("yyyy-MM-dd").parse(date)
-                ?.let { SimpleDateFormat("EEEE").format(it) }
+            val dayOfTheWeek = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(date)
+                ?.let { SimpleDateFormat("EEEE", Locale.ENGLISH).format(it) }
 
             if (date == currentDate) {
                 this.day.text = "Today"
